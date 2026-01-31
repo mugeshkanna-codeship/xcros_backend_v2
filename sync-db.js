@@ -6,36 +6,85 @@ async function syncDatabase() {
 
     // Define sync order to handle dependencies
     const syncOrder = [
-      // Core tables first (no dependencies)
+      // Core location tables first (no dependencies)
       'Country', 'State', 'City', 'Pincode',
+      
+      // Location info and utilities
+      'CityInfo', 'CityLanding', 'PincodeInfo', 'PincodeSubscribers', 'LocationLaunch',
+      
+      // Core system tables
       'Role', 'Tag', 'Media', 'Package',
+      
+      // User management
       'User', 'UserProfile', 'UserSettings', 'UserRole', 'UserAuthMethod', 'UserMetadata',
+      'ProfileDashboard', 'ReviewUserProfile', 'BookingUserProfile',
+      
+      // Category hierarchy
       'Category', 'PrimaryCategory', 'SecondaryCategory', 'TertiaryCategory', 'CategoryTag',
-
-      // Business tables
-      'Amenity', 'Listing', 'ListingAddress', 'ListingContact', 'ListingShift',
+      'ProductCategory',
+      
+      // Business configuration
+      'Vertical', 'Brand', 'Market', 'ServiceMarketplace', 'Experience', 'Client',
+      
+      // Pricing tables
+      'PricingType', 'PricingPackage', 'Pricing', 'PricingAddon',
+      
+      // Legal and compliance
+      'LegalCategory', 'Legal', 'LegalAcceptance',
+      
+      // Amenities
+      'Amenity',
+      
+      // Listings (main business entity)
+      'Listing', 'ListingAddress', 'ListingContact', 'ListingShift',
       'ListingGallery', 'ListingAward', 'ListingCertification', 'ListingFunFact', 'ListingTimeline',
-      'ListingTag', 'ListingAmenity',
-
-      // User interaction tables
-      'ListingSave', 'ListingVisit', 'ListingMessage',
+      'ListingTag', 'ListingAmenity', 'ListingFrontend', 'ListingSubscribers',
+      
+      // Listing interactions
+      'ListingSave', 'ListingVisit', 'ListingMessage', 'DislikeListing', 'Interested',
+      
+      // Reviews
       'Review', 'ReviewLike', 'ReviewMedia',
-
-      // Business logic tables
+      
+      // Reports
+      'ReportListing', 'ReportReview',
+      
+      // Agent management
+      'AgentMessage', 'AgentReview', 'AgentReviewLike', 'RealEstateAgent',
+      
+      // Bookings
       'Appointment', 'Booking', 'BookingService', 'BookingPayment',
-      'Coupon', 'CouponUsage', 'CouponListing', 'CouponCategory',
-
-      // Content tables
-      'Blog', 'BlogTag', 'Banner', 'Faq',
-
-      // Communication tables
+      
+      // Coupons
+      'Coupon', 'CouponUsage', 'CouponListing', 'CouponCategory', 'CouponEnquiry',
+      
+      // Promotions
+      'PromotedListing', 'PromotedProduct', 'RecommendedListing', 'DealOfTheDay',
+      
+      // Sponsors
+      'Sponsor', 'SponsorContact',
+      
+      // Team
+      'Team', 'TeamMessage',
+      
+      // Content management
+      'Blog', 'BlogTag', 'Banner', 'Testimonial', 'Social',
+      
+      // FAQs
+      'FaqPrimary', 'FaqSecondary', 'FaqContent', 'FaqGeneral', 'FaqListing', 'FaqListingContent', 'Faq',
+      
+      // Communication
       'Subscriber', 'Notification', 'Otp',
-
-      // Support tables
-      'Support', 'SupportMessage'
+      
+      // Support
+      'Support', 'SupportMessage',
+      
+      // Education
+      'CourseEnrollment'
     ];
 
     // Sync tables in dependency order
+    let syncedCount = 0;
     for (const modelName of syncOrder) {
       if (db[modelName]) {
         console.log(`🔄 Syncing ${modelName}...`);
@@ -44,11 +93,14 @@ async function syncDatabase() {
           force: true  // Force recreate tables for clean sync
         });
         console.log(`✅ ${modelName} synced`);
+        syncedCount++;
+      } else {
+        console.warn(`⚠️  Model ${modelName} not found in database models`);
       }
     }
 
     console.log('✅ Database synchronized successfully!');
-    console.log('📊 All 54 models have been created/updated in the database.');
+    console.log(`📊 ${syncedCount} models have been created/updated in the database.`);
     process.exit(0);
   } catch (error) {
     console.error('❌ Database sync failed:', error.message);
