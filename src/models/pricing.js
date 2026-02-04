@@ -66,8 +66,13 @@ export default (sequelize, DataTypes) => {
         'Delivery partner',
         'Marketing Agent',
         'Influencer',
-        'Affiliate'
+        'Affiliate',
+        "sell with us"
       )
+    },
+    slug: {
+      type: DataTypes.STRING,
+      unique: true
     }
   }, {
     sequelize,
@@ -79,8 +84,21 @@ export default (sequelize, DataTypes) => {
       { fields: ['page_type'] },
       { fields: ['status'] },
       { fields: ['domain'] },
-      { fields: ['placement'] }
-    ]
+      { fields: ['placement'] },
+      { fields: ['slug'] }
+    ],
+    hooks: {
+      beforeCreate: (pricing) => {
+        if (pricing.placement && !pricing.slug) {
+          pricing.slug = pricing.placement.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        }
+      },
+      beforeUpdate: (pricing) => {
+        if (pricing.placement && !pricing.slug) {
+          pricing.slug = pricing.placement.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        }
+      }
+    }
   });
   return Pricing;
 };
