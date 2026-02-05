@@ -28,6 +28,14 @@ async function syncDatabase() {
       
       // Pricing tables
       'PricingType', 'PricingPackage', 'Pricing', 'PricingAddon',
+      'PricingHero', 'PricingService', 'PricingServiceDropdown',
+      'PricingFeaturesSection', 'PricingFeature',
+      'PricingSliderSection', 'PricingSlider',
+      'PricingAbout', 'PricingAboutDropdown',
+      'PricingStatsSection', 'PricingStat',
+      
+      // ChangeLog system
+      'ChangeLog', 'ChangeLogQuestion',
       
       // Legal and compliance
       'LegalCategory', 'Legal', 'LegalAcceptance',
@@ -89,8 +97,8 @@ async function syncDatabase() {
       if (db[modelName]) {
         console.log(`🔄 Syncing ${modelName}...`);
         await db[modelName].sync({
-          alter: process.env.ALTER_DB === 'true',
-          force: true  // Force recreate tables for clean sync
+          alter: true,  // Safe schema updates without data loss
+          force: false  // Do not drop tables
         });
         console.log(`✅ ${modelName} synced`);
         syncedCount++;

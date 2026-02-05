@@ -4,7 +4,12 @@ import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class Pricing extends Model {
     static associate(models) {
-      // Pricing pages can be associated with specific placements or verticals
+      Pricing.hasOne(models.PricingHero, { foreignKey: 'pricingId', as: 'hero' });
+      Pricing.hasOne(models.PricingService, { foreignKey: 'pricingId', as: 'service' });
+      Pricing.hasOne(models.PricingFeaturesSection, { foreignKey: 'pricingId', as: 'featuresSection' });
+      Pricing.hasOne(models.PricingSliderSection, { foreignKey: 'pricingId', as: 'sliderSection' });
+      Pricing.hasOne(models.PricingAbout, { foreignKey: 'pricingId', as: 'about' });
+      Pricing.hasOne(models.PricingStatsSection, { foreignKey: 'pricingId', as: 'statsSection' });
     }
   }
   Pricing.init({
@@ -13,45 +18,20 @@ export default (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    section1: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Hero section: mainHeading, greyHeading, subHeading, image'
-    },
-    section2: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Service section with dropdowns: mainHeading, dropdowns array with services, gallery, faqs, terms'
-    },
-    section3: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Features section: mainHeading, subHeading, features array, content'
-    },
-    section4: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Slider section: mainHeading, subHeading, slider array with images'
-    },
-    section5: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'About Us section: mainHeading, description, heroImage, smallImage, video, dropdowns'
-    },
-    section6: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Stats section: mainHeading, stats array with image, value, title, text'
-    },
     pageType: {
       type: DataTypes.ENUM('partner pricing', 'services pricing'),
-      defaultValue: 'services pricing'
+      defaultValue: 'services pricing',
+      allowNull: false
     },
     status: {
       type: DataTypes.ENUM('Active', 'Inactive'),
-      defaultValue: 'Active'
+      defaultValue: 'Active',
+      allowNull: false
     },
-    domain: DataTypes.STRING,
+    domain: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     placement: {
       type: DataTypes.ENUM(
         'Listing Profile',
@@ -67,11 +47,13 @@ export default (sequelize, DataTypes) => {
         'Marketing Agent',
         'Influencer',
         'Affiliate',
-        "sell with us"
-      )
+        'sell with us'
+      ),
+      allowNull: true
     },
     slug: {
       type: DataTypes.STRING,
+      allowNull: true,
       unique: true
     }
   }, {
